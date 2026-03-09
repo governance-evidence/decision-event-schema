@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: "Decision Event Schema"
+message: "If you use this schema, please cite it as below."
+type: software
+authors:
+  - given-names: Oleg
+    family-names: Solozobov
+version: 0.1.0
+date-released: "2026-02-24"
+license: MIT
+repository-code: "https://github.com/governance-evidence/decision-event-schema"
+abstract: >-
+  JSON Schema specification for decision events as governance evidence units.
+  Defines the minimal unit of governance evidence that enables post-incident
+  reconstruction of automated decisions in complex digital systems.
+keywords:
+  - governance evidence
+  - decision reconstruction
+  - accountability
+  - json schema
+  - post-incident analysis

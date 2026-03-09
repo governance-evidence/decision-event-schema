@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "decision_id": "robodebt-income-averaging-2015",
+  "timestamp": "2015-07-01T00:00:00.000Z",
+  "decision_type": "automated",
+  "decision_context": {
+    "available_inputs": [
+      "ATO annual income data (aggregated, not fortnightly)",
+      "Centrelink welfare payment records",
+      "Individual recipient identifiers"
+    ],
+    "alternatives_considered": [],
+    "constraints_operative": [
+      "Income data available only at annual granularity from ATO",
+      "Fortnightly income data (required for accurate assessment) unavailable at scale without manual reconciliation",
+      "Procedural design optimized for compliance throughput over individual assessment accuracy",
+      "Reverse onus of proof: recipients required to disprove computer-generated debt"
+    ],
+    "_recoverability_note": "Partially recoverable but structurally misleading: inputs were logged, but alternatives_considered is empty because the system applied a single averaging algorithm without evaluating alternative calculation methods per assessment. The Royal Commission found the method itself was unlawful."
+  },
+  "decision_logic": {
+    "rule_version": "Income-averaging algorithm (annual ATO income / 26 fortnights)",
+    "parameters": {
+      "averaging_method": "Annual income divided by 26 fortnights (uniform distribution assumption)",
+      "debt_calculation": "Imputed fortnightly income minus declared fortnightly income equals debt amount",
+      "structural_flaw": "Assumes uniform income distribution across year; produces systematic overestimation for anyone with variable income (seasonal, casual, part-time workers)"
+    },
+    "thresholds": {
+      "debt_notice_trigger": "Any positive difference between imputed and declared income",
+      "statistical_confidence_threshold": null
+    },
+    "_recoverability_note": "Recoverable but reveals the logic was structurally wrong: the algorithm was documented; the problem was the algorithm itself was incapable of producing accurate individual calculations."
+  },
+  "decision_boundary": {
+    "contributing_subsystems": [
+      "ATO income data warehouse (annual aggregates only)",
+      "Centrelink payment records system",
+      "Automated income-averaging calculation engine",
+      "Debt notice generation and issuance system",
+      "Appeal and review pathway (procedural closure)"
+    ],
+    "external_dependencies": [
+      "ATO data-sharing arrangement (annual income only; fortnightly data not available)",
+      "Employer payroll records (not accessed; would have been needed for accurate individual assessment)",
+      "Individual bank records (burden placed on recipients to produce)"
+    ],
+    "_recoverability_note": "Partially recoverable: subsystems are identifiable, but the critical missing boundary (employer payroll records required for ground truth) was never accessed by the system."
+  },
+  "decision_quality_indicators": {
+    "confidence_score": null,
+    "uncertainty_flags": [],
+    "ground_truth_available": false,
+    "_recoverability_note": "Structurally unfillable: no mechanism existed to flag that the averaging method could not produce individual-level accuracy. The system treated every averaged calculation as definitive. Ground truth (actual fortnightly income) existed in employer records but was architecturally inaccessible at the scale of 470,000+ assessments."
+  },
+  "human_override_record": {
+    "override_decision": "Formally available via appeal pathway",
+    "independence_assessment": "Not independent: review process verified algorithmic execution, not substantive correctness",
+    "basis_for_deviation": "Recipients required to provide their own fortnightly income evidence to disprove the automated assessment (reverse onus of proof)",
+    "_recoverability_note": "Formally present but epistemically void: appeal pathways existed but operated as procedural closure, confirming the system operated correctly according to its code rather than interrogating whether outcomes were fair. This is the most insidious override failure mode: the mechanism existed but was designed to confirm the system, not challenge it."
+  },
+  "temporal_metadata": {
+    "decision_timestamp": "2015-07-01T00:00:00.000Z",
+    "evidence_availability_timestamp": null,
+    "ground_truth_arrival_timestamp": "2023-07-07T00:00:00.000Z",
+    "_recoverability_note": "Partially recoverable: assessment generation timestamps existed, but evidence needed to assess accuracy (fortnightly income data) was never available to the system. Systemic ground truth arrived only when the Royal Commission (reported 7 July 2023) found the entire method was unlawful. The ground truth delay spans the full operational period (2015-2023): 8 years."
+  }
+}
