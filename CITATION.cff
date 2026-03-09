@@ -8,6 +8,7 @@ authors:
 version: 0.1.0
 date-released: "2026-02-24"
 license: MIT
+doi: "10.5281/zenodo.18923178"
 repository-code: "https://github.com/governance-evidence/decision-event-schema"
 abstract: >-
   JSON Schema specification for decision events as governance evidence units.

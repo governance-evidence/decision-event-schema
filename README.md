@@ -1,5 +1,7 @@
 # Decision Event Schema
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923178.svg)](https://doi.org/10.5281/zenodo.18923178)
+
 JSON Schema specification for decision events as governance evidence units.
 
 ## Academic Context
@@ -108,7 +110,8 @@ If you use this schema in your research, please cite:
   title = {Decision Event Schema},
   version = {0.1.0},
   year = {2026},
-  url = {https://github.com/governance-evidence/decision-event-schema}
+  url = {https://github.com/governance-evidence/decision-event-schema},
+  doi = {10.5281/zenodo.18923178}
 }
 ```
 
