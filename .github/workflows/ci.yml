@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  validate:
+    name: Schema Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install validation tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pre-commit 'jsonschema>=4.20,<5'
+
+      - name: Run pre-commit checks
+        run: pre-commit run --all-files
+
+      - name: Run schema validation script
+        run: python tests/validate.py

@@ -1,6 +1,10 @@
 # Decision Event Schema
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923178.svg)](https://doi.org/10.5281/zenodo.18923178)
+[![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/tag/v0.1.0)
+![Version: v0.1.0](https://img.shields.io/badge/version-v0.1.0-blue)
+![JSON Schema: draft 2020-12](https://img.shields.io/badge/json%20schema-draft%202020--12-0f766e)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 JSON Schema specification for decision events as governance evidence units.
 
@@ -41,7 +45,7 @@ validate(instance=event, schema=schema)
 ## Schema Properties
 
 | Property | Required | Resists Degradation Type |
-|----------|----------|--------------------------|
+| -------- | -------- | ------------------------ |
 | `decision_id` | yes | -- |
 | `timestamp` | yes | -- |
 | `decision_type` | yes | -- |
@@ -56,7 +60,7 @@ See [docs/properties.md](docs/properties.md) for detailed definitions and exampl
 
 ## Repository Structure
 
-```
+```text
 schema/
   decision-event.schema.json   # v0.1 JSON Schema (draft 2020-12)
 examples/
@@ -77,7 +81,7 @@ tests/
 Diagnostic application of DES to the four paradigmatic cases (Paper 12, Table 19). Each cell indicates whether the governance evidence property was captured, partially available, structurally unfillable, or opaque at the time of the incident. The Cloudflare case (illustrative) is included in the examples directory but excluded from this matrix.
 
 | Property | Knight Capital 2012 (velocity) | Robodebt 2015-2019 (scale) | Uber ATG 2018 (opacity) | CrowdStrike 2024 (scale+vel.) |
-|----------|:---:|:---:|:---:|:---:|
+| -------- | :---: | :---: | :---: | :---: |
 | `decision_context` | **Unfillable** | Partial (no alternatives) | Recoverable | **Unfillable** (no alternatives) |
 | `decision_logic` | Recoverable | Recoverable (but wrong) | **Opaque** (irreducible) | Fully recoverable |
 | `decision_boundary` | **Unfillable** | Recoverable | **Unfillable** (handoff unmonitored) | **Unfillable** (bypassed governance) |
@@ -99,6 +103,18 @@ Diagnostic application of DES to the four paradigmatic cases (Paper 12, Table 19
 ## Contributing
 
 This is a research artifact under active development. Issues and pull requests are welcome. Please reference the academic framework when proposing schema changes.
+
+Local quality checks:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install pre-commit jsonschema
+pre-commit install
+pre-commit run --all-files
+python tests/validate.py
+```
 
 ## Citation
 
