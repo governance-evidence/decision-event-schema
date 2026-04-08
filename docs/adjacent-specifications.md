@@ -1,6 +1,6 @@
 # Adjacent Specifications: Positioning the Decision Event Schema
 
-Version 0.2.0
+Version 0.3.0
 
 ## Overview
 

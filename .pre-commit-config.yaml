@@ -10,7 +10,7 @@ repos:
   - repo: local
     hooks:
       - id: validate-decision-event-schema
-        name: validate decision event schema examples
+        name: validate decision event schema examples and version consistency
         entry: python tests/validate.py
         language: python
         additional_dependencies:

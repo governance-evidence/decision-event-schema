@@ -1,4 +1,4 @@
-"""Validation tests for the Decision Event Schema v0.2.
+"""Validation tests for the Decision Event Schema v0.3.
 
 Validates all example files against the schema, checks structural constraints,
 and verifies that each example correctly demonstrates its intended governance
@@ -8,6 +8,7 @@ v0.1.0: initial schema with 6 property groups.
 v0.2.0: 4 required property groups, logic_type, override_occurred,
 evidence_tier, hash_chain, conditional override validation, two-path human
 judgment design, crypto generation sequence, boundary contract extensions.
+v0.3.0: schema_version is now required on every Decision Event instance.
 """
 
 import json
@@ -24,6 +25,12 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema" / "decision-event.schema.json"
 EXAMPLES_DIR = ROOT / "examples"
+README_PATH = ROOT / "README.md"
+CITATION_PATH = ROOT / "CITATION.cff"
+PROPERTIES_DOC_PATH = ROOT / "docs" / "properties.md"
+ADJACENT_DOC_PATH = ROOT / "docs" / "adjacent-specifications.md"
+CHANGELOG_PATH = ROOT / "CHANGELOG.md"
+SCHEMA_VERSION = "0.3.0"
 
 PASSED = 0
 FAILED = 0
@@ -32,6 +39,11 @@ FAILED = 0
 def load_json(path: Path) -> dict:
     with open(path) as f:
         return json.load(f)
+
+
+def load_text(path: Path) -> str:
+    with open(path) as f:
+        return f.read()
 
 
 def report(test_name: str, passed: bool, detail: str = ""):
@@ -64,9 +76,10 @@ def test_all_examples_valid():
 
 
 def test_minimal_event_is_valid():
-    """Event with only required property groups validates."""
+    """Event with schema_version and required property groups validates."""
     schema = load_json(SCHEMA_PATH)
     minimal = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {
             "decision_id": "550e8400-e29b-41d4-a716-446655440001",
             "decision_type": "automated_assessment",
@@ -91,9 +104,76 @@ def test_minimal_event_is_valid():
     }
     try:
         validate(instance=minimal, schema=schema)
-        report("Minimal event (4 required groups)", True)
+        report("Minimal event (version + 4 required groups)", True)
     except ValidationError as e:
-        report("Minimal event (4 required groups)", False, str(e.message)[:120])
+        report("Minimal event (version + 4 required groups)", False, str(e.message)[:120])
+
+
+def test_missing_schema_version_rejected():
+    """Event without schema_version is rejected."""
+    schema = load_json(SCHEMA_PATH)
+    invalid = {
+        "decision_context": {
+            "decision_id": "550e8400-e29b-41d4-a716-446655440001",
+            "decision_type": "automated_assessment",
+        },
+        "decision_logic": {
+            "logic_type": "rule_based",
+            "output": "approve",
+        },
+        "human_override_record": {
+            "override_occurred": False,
+        },
+        "temporal_metadata": {
+            "event_timestamp": "2026-01-01T00:00:00Z",
+            "sequence_number": 1,
+            "hash_chain": {
+                "previous_hash": None,
+                "current_hash": "abc123",
+                "algorithm": "SHA-256",
+            },
+            "evidence_tier": "lightweight",
+        },
+    }
+    try:
+        validate(instance=invalid, schema=schema)
+        report("Missing schema_version rejected", False, "Invalid event was not rejected")
+    except ValidationError:
+        report("Missing schema_version rejected", True)
+
+
+def test_invalid_schema_version_format_rejected():
+    """schema_version must follow semver."""
+    schema = load_json(SCHEMA_PATH)
+    invalid = {
+        "schema_version": "v0.3",
+        "decision_context": {
+            "decision_id": "550e8400-e29b-41d4-a716-446655440001",
+            "decision_type": "automated_assessment",
+        },
+        "decision_logic": {
+            "logic_type": "rule_based",
+            "output": "approve",
+        },
+        "human_override_record": {
+            "override_occurred": False,
+        },
+        "temporal_metadata": {
+            "event_timestamp": "2026-01-01T00:00:00Z",
+            "sequence_number": 1,
+            "hash_chain": {
+                "previous_hash": None,
+                "current_hash": "abc123",
+                "algorithm": "SHA-256",
+            },
+            "evidence_tier": "lightweight",
+        },
+    }
+    try:
+        validate(instance=invalid, schema=schema)
+        report("Invalid schema_version format rejected", False, "Invalid event was not rejected")
+    except ValidationError:
+        report("Invalid schema_version format rejected", True)
 
 
 def test_missing_required_groups_rejected():
@@ -101,6 +181,7 @@ def test_missing_required_groups_rejected():
     schema = load_json(SCHEMA_PATH)
     # Missing decision_logic, human_override_record, temporal_metadata
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {
             "decision_id": "test",
             "decision_type": "test",
@@ -117,6 +198,7 @@ def test_missing_override_occurred_rejected():
     """human_override_record without override_occurred is rejected."""
     schema = load_json(SCHEMA_PATH)
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "deny"},
         "human_override_record": {"override_decision": "none"},
@@ -138,6 +220,7 @@ def test_invalid_logic_type_rejected():
     """Event with invalid logic_type (not core enum, not namespaced) is rejected."""
     schema = load_json(SCHEMA_PATH)
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "INVALID", "output": "deny"},
         "human_override_record": {"override_occurred": False},
@@ -159,6 +242,7 @@ def test_namespaced_logic_type_accepted():
     """Namespaced logic_type (e.g., fintech:credit_scoring) is accepted."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "fintech:credit_scoring", "output": "approve"},
         "human_override_record": {"override_occurred": False},
@@ -180,6 +264,7 @@ def test_invalid_evidence_tier_rejected():
     """Event with invalid evidence_tier is rejected."""
     schema = load_json(SCHEMA_PATH)
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "deny"},
         "human_override_record": {"override_occurred": False},
@@ -202,6 +287,7 @@ def test_override_conditional_requires_fields():
     schema = load_json(SCHEMA_PATH)
     # override_occurred=true but missing required override detail fields
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "human_decision", "output": "approve"},
         "human_override_record": {
@@ -226,6 +312,7 @@ def test_override_conditional_with_fields_accepted():
     """When override_occurred=true with required fields, event validates."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "ml_inference", "output": "deny"},
         "decision_quality_indicators": {"decision_risk_level": "high"},
@@ -251,7 +338,7 @@ def test_override_conditional_with_fields_accepted():
         report("Override conditional (with fields) accepted", False, str(e.message)[:120])
 
 
-# ─── v0.3.0 two-path human judgment tests ────────────────────────
+# ─── Two-path human judgment tests ───────────────────────────────
 
 
 def test_human_decision_requires_actor_rationale():
@@ -259,6 +346,7 @@ def test_human_decision_requires_actor_rationale():
     schema = load_json(SCHEMA_PATH)
     # human_decision without override_actor/override_rationale should fail
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "human_decision", "output": "approve"},
         "human_override_record": {
@@ -282,6 +370,7 @@ def test_human_decision_with_actor_rationale_accepted():
     """human_decision with override_actor and override_rationale validates."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "human_decision", "output": "approve"},
         "human_override_record": {
@@ -308,6 +397,7 @@ def test_human_decision_override_true_requires_output_fields():
     schema = load_json(SCHEMA_PATH)
     # Has actor/rationale but missing original_output/overridden_output/override_timestamp
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "human_decision", "output": "approve"},
         "human_override_record": {
@@ -334,6 +424,7 @@ def test_algorithmic_override_requires_actor():
     schema = load_json(SCHEMA_PATH)
     # rule_based + override_occurred=true but missing override_actor
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "deny"},
         "human_override_record": {
@@ -361,6 +452,7 @@ def test_non_human_no_override_minimal_accepted():
     """Non-human_decision + override_occurred=false: no actor/rationale required."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "approve"},
         "human_override_record": {
@@ -380,7 +472,7 @@ def test_non_human_no_override_minimal_accepted():
         report("Non-human + no override (minimal) accepted", False, str(e.message)[:120])
 
 
-# ─── v0.2.0 Tier 2 decision_risk_level tests ─────────────────────
+# ─── Tier 2 decision_risk_level tests ────────────────────────────
 
 
 def test_tier2_requires_decision_risk_level():
@@ -388,6 +480,7 @@ def test_tier2_requires_decision_risk_level():
     schema = load_json(SCHEMA_PATH)
     # sampled tier without decision_quality_indicators should fail
     invalid = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "approve"},
         "human_override_record": {"override_occurred": False},
@@ -409,6 +502,7 @@ def test_tier2_with_decision_risk_level_accepted():
     """Tier 2 (sampled) with decision_risk_level validates."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "approve"},
         "decision_quality_indicators": {"decision_risk_level": "medium"},
@@ -431,6 +525,7 @@ def test_tier1_without_decision_risk_level_accepted():
     """Tier 1 (lightweight) does NOT require decision_risk_level."""
     schema = load_json(SCHEMA_PATH)
     event = {
+        "schema_version": SCHEMA_VERSION,
         "decision_context": {"decision_id": "test", "decision_type": "test"},
         "decision_logic": {"logic_type": "rule_based", "output": "approve"},
         "human_override_record": {"override_occurred": False},
@@ -468,15 +563,91 @@ def test_schema_version_format():
         report(f"schema_version semver: {path.name}", bool(semver.match(version)), version)
 
 
-def test_schema_version_is_020():
-    """All examples reference schema version 0.2.0."""
+def test_schema_version_matches_current_release():
+    """All examples reference the current schema version."""
     for path in sorted(EXAMPLES_DIR.glob("*.json")):
         example = load_json(path)
         report(
-            f"schema_version=0.2.0: {path.name}",
-            example.get("schema_version") == "0.2.0",
+            f"schema_version={SCHEMA_VERSION}: {path.name}",
+            example.get("schema_version") == SCHEMA_VERSION,
             example.get("schema_version", ""),
         )
+
+
+def test_schema_metadata_version_matches_current_release():
+    """Schema metadata advertises the current schema version."""
+    schema = load_json(SCHEMA_PATH)
+    version_examples = schema.get("properties", {}).get("schema_version", {}).get("examples", [])
+    report(
+        "schema metadata version example matches current release",
+        version_examples == [SCHEMA_VERSION],
+        str(version_examples),
+    )
+    report(
+        "schema description mentions current release",
+        f"Version {SCHEMA_VERSION}" in schema.get("description", ""),
+        schema.get("description", "")[:80],
+    )
+
+
+def test_release_docs_version_consistency():
+    """README, docs, citation, and changelog stay aligned with the schema version."""
+    readme = load_text(README_PATH)
+    citation = load_text(CITATION_PATH)
+    properties_doc = load_text(PROPERTIES_DOC_PATH)
+    adjacent_doc = load_text(ADJACENT_DOC_PATH)
+    changelog = load_text(CHANGELOG_PATH)
+
+    checks = [
+        (
+            "README badge version matches current release",
+            f"![Version: v{SCHEMA_VERSION}]" in readme,
+            f"v{SCHEMA_VERSION}",
+        ),
+        (
+            "README schema properties heading matches current release",
+            f"## Schema Properties (v{SCHEMA_VERSION})" in readme,
+            f"v{SCHEMA_VERSION}",
+        ),
+        (
+            "README minimal event uses current schema version",
+            f'"schema_version": "{SCHEMA_VERSION}"' in readme,
+            SCHEMA_VERSION,
+        ),
+        (
+            "README version section matches current release",
+            f"**v{SCHEMA_VERSION}**" in readme,
+            f"v{SCHEMA_VERSION}",
+        ),
+        (
+            "README citation block matches current release",
+            f"version = {{{SCHEMA_VERSION}}}" in readme,
+            SCHEMA_VERSION,
+        ),
+        (
+            "CITATION version matches current release",
+            f"version: {SCHEMA_VERSION}" in citation,
+            SCHEMA_VERSION,
+        ),
+        (
+            "properties doc version matches current release",
+            f"Version {SCHEMA_VERSION}" in properties_doc,
+            SCHEMA_VERSION,
+        ),
+        (
+            "adjacent specifications doc version matches current release",
+            f"Version {SCHEMA_VERSION}" in adjacent_doc,
+            SCHEMA_VERSION,
+        ),
+        (
+            "changelog contains current release heading",
+            f"## [{SCHEMA_VERSION}]" in changelog,
+            SCHEMA_VERSION,
+        ),
+    ]
+
+    for test_name, passed, detail in checks:
+        report(test_name, passed, detail)
 
 
 # ─── Structural property tests ────────────────────────────────────
@@ -529,7 +700,7 @@ def test_recoverability_notes():
         )
 
 
-# ─── v0.2.0 required field tests ──────────────────────────────────
+# ─── Contract field tests ─────────────────────────────────────────
 
 
 VALID_LOGIC_TYPES = {"rule_based", "ml_inference", "hybrid", "policy_evaluation", "human_decision"}
@@ -802,6 +973,8 @@ if __name__ == "__main__":
     test_all_examples_valid()
     print()
     test_minimal_event_is_valid()
+    test_missing_schema_version_rejected()
+    test_invalid_schema_version_format_rejected()
     test_missing_required_groups_rejected()
     test_missing_override_occurred_rejected()
     test_invalid_logic_type_rejected()
@@ -822,7 +995,9 @@ if __name__ == "__main__":
     print()
     test_schema_version_present()
     test_schema_version_format()
-    test_schema_version_is_020()
+    test_schema_version_matches_current_release()
+    test_schema_metadata_version_matches_current_release()
+    test_release_docs_version_consistency()
     print()
     test_all_governance_properties_present()
     test_recoverability_notes()

@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "decision_context": {
     "decision_id": "crowdstrike-channel-file-291-deploy",
     "decision_type": "software_deployment",

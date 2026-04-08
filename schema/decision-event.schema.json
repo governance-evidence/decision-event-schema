@@ -2,15 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/governance-evidence/decision-event-schema/blob/main/schema/decision-event.schema.json",
   "title": "Decision Event",
-  "description": "The minimal unit of governance evidence that enables post-incident reconstruction of automated decisions. Each property group resists a specific governance artifact degradation type. Version 0.2.0 adds two-path human judgment design (primary human decisions vs algorithmic overrides), logic type classification, mandatory override tracking, tiered evidence, cryptographic integrity fields with generation sequence specification, and boundary contract extensions (data_contract, failure_mode).",
+  "description": "The minimal unit of governance evidence that enables post-incident reconstruction of automated decisions. Each property group resists a specific governance artifact degradation type. Version 0.3.0 requires explicit schema_version declaration on every event and preserves the v0.2 feature set: two-path human judgment design (primary human decisions vs algorithmic overrides), logic type classification, mandatory override tracking, tiered evidence, cryptographic integrity fields with generation sequence specification, and boundary contract extensions (data_contract, failure_mode).",
   "type": "object",
-  "required": ["decision_context", "decision_logic", "human_override_record", "temporal_metadata"],
+  "required": ["schema_version", "decision_context", "decision_logic", "human_override_record", "temporal_metadata"],
   "properties": {
     "schema_version": {
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "Semantic version of the Decision Event Schema this event conforms to.",
-      "examples": ["0.2.0"]
+      "examples": ["0.3.0"]
     },
     "decision_context": {
       "type": "object",

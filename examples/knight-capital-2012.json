@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "decision_context": {
     "decision_id": "knight-capital-2012-08-01-smars",
     "decision_type": "transaction_execution",

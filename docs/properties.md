@@ -1,10 +1,16 @@
 # Decision Event Schema: Property Reference
 
-Version 0.2.0
+Version 0.3.0
 
-## Required Property Groups
+## Required Top-Level Fields
 
-v0.2.0 requires four top-level property groups. Each group contains its own required sub-fields.
+v0.3.0 requires `schema_version` plus four top-level property groups. Each group contains its own required sub-fields.
+
+### `schema_version` (required)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `schema_version` | `string` | yes | Semantic version of the Decision Event Schema that the event claims to conform to. |
 
 ### `decision_context` (required)
 

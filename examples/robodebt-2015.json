@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "decision_context": {
     "decision_id": "robodebt-income-averaging-2015",
     "decision_type": "welfare_assessment",

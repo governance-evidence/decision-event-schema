@@ -1,8 +1,8 @@
 # Decision Event Schema
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923178.svg)](https://doi.org/10.5281/zenodo.18923178)
-[![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/tag/v0.2.0)
-![Version: v0.2.0](https://img.shields.io/badge/version-v0.2.0-blue)
+[![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/latest)
+![Version: v0.3.0](https://img.shields.io/badge/version-v0.3.0-blue)
 ![JSON Schema: draft 2020-12](https://img.shields.io/badge/json%20schema-draft%202020--12-0f766e)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -42,12 +42,13 @@ with open("examples/cloudflare-2025.json") as f:
 validate(instance=event, schema=schema)
 ```
 
-## Schema Properties (v0.2.0)
+## Schema Properties (v0.3.0)
 
-Four top-level property groups are **required**. Each group contains its own required sub-fields.
+`schema_version` plus four top-level property groups are **required**. Each group contains its own required sub-fields.
 
 | Property Group | Required | Key Sub-fields | Resists Degradation Type |
 | -------------- | -------- | -------------- | ------------------------ |
+| `schema_version` | **yes** | semver string (`0.3.0`) | Contract clarity |
 | `decision_context` | **yes** | `decision_id`, `decision_type` | Content Staleness |
 | `decision_logic` | **yes** | `logic_type`, `output` | Schema Drift |
 | `human_override_record` | **yes** | `override_occurred` (+ conditional fields when true) | Override Accumulation |
@@ -57,11 +58,46 @@ Four top-level property groups are **required**. Each group contains its own req
 
 See [docs/properties.md](docs/properties.md) for detailed definitions and examples.
 
+## Minimal Valid Event
+
+```json
+{
+  "schema_version": "0.3.0",
+  "decision_context": {
+    "decision_id": "550e8400-e29b-41d4-a716-446655440001",
+    "decision_type": "automated_assessment"
+  },
+  "decision_logic": {
+    "logic_type": "rule_based",
+    "output": "approve"
+  },
+  "human_override_record": {
+    "override_occurred": false
+  },
+  "temporal_metadata": {
+    "event_timestamp": "2026-01-01T00:00:00Z",
+    "sequence_number": 1,
+    "hash_chain": {
+      "previous_hash": null,
+      "current_hash": "abc123",
+      "algorithm": "SHA-256"
+    },
+    "evidence_tier": "lightweight"
+  }
+}
+```
+
+## Upgrading from v0.2.x
+
+- Add `schema_version` to every Decision Event instance.
+- Set `schema_version` to `0.3.0` for payloads targeting this release.
+- Re-run validation for stored examples and producer fixtures before publishing or ingesting events.
+
 ## Repository Structure
 
 ```text
 schema/
-  decision-event.schema.json   # v0.2 JSON Schema (draft 2020-12)
+  decision-event.schema.json   # v0.3 JSON Schema (draft 2020-12)
 examples/
   cloudflare-2025.json         # Cloudflare outage November 2025 (scale: abstraction boundaries)
   crowdstrike-2024.json        # CrowdStrike Falcon sensor outage (scale + velocity)
@@ -97,11 +133,13 @@ Diagnostic application of DES to the four paradigmatic cases (Paper 12, Table 19
 
 ## Version
 
-**v0.2.0** -- Breaking change from v0.1.0. Four required property groups (`decision_context`, `decision_logic`, `human_override_record`, `temporal_metadata`) with required sub-fields. Adds `logic_type` with extensible namespace pattern, `override_occurred` mandatory boolean, `evidence_tier`, `hash_chain` integrity verification, and conditional validation for override details. All five case study examples updated.
+**v0.3.0** -- Breaking change from v0.2.0. Requires explicit `schema_version` on every Decision Event instance while preserving the v0.2 top-level property group structure and validation rules. All five case study examples and validation fixtures now declare the schema version they conform to.
 
 ## Contributing
 
 This is a research artifact under active development. Issues and pull requests are welcome. Please reference the academic framework when proposing schema changes.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution workflow and release checklist, and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 Local quality checks:
 
@@ -123,7 +161,7 @@ If you use this schema in your research, please cite:
 @software{solozobov2026decision,
   author = {Solozobov, Oleg},
   title = {Decision Event Schema},
-  version = {0.1.0},
+  version = {0.3.0},
   year = {2026},
   url = {https://github.com/governance-evidence/decision-event-schema},
   doi = {10.5281/zenodo.18923178}

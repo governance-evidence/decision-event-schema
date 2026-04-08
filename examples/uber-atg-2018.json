@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "decision_context": {
     "decision_id": "uber-atg-tempe-2018-03-18-perception",
     "decision_type": "autonomous_operation",
