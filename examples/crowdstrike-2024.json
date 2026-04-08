@@ -1,9 +1,9 @@
 {
-  "schema_version": "0.1.0",
-  "decision_id": "crowdstrike-channel-file-291-deploy",
-  "timestamp": "2024-07-19T04:09:00.000Z",
-  "decision_type": "automated",
+  "schema_version": "0.2.0",
   "decision_context": {
+    "decision_id": "crowdstrike-channel-file-291-deploy",
+    "decision_type": "software_deployment",
+    "trigger": "Threat intelligence identified novel named pipe abuse technique requiring rapid response",
     "available_inputs": [
       "Threat intelligence: novel named pipe abuse technique requiring rapid response",
       "Channel File 291 content configuration",
@@ -20,6 +20,8 @@
     "_recoverability_note": "Partially recoverable: threat context was documented, but alternatives_considered is empty because the Rapid Response Content pathway was architecturally designed to bypass the alternatives-evaluation process (staged rollout, canary) that sensor code required. The decision to create a fast path was made once at the organizational level; individual deployments did not reconsider it."
   },
   "decision_logic": {
+    "logic_type": "rule_based",
+    "output": "Deploy Channel File 291 to all endpoints via Rapid Response Content pipeline",
     "rule_version": "Channel File 291 — Rapid Response Content targeting named pipe abuse technique",
     "parameters": {
       "content_type": "Rapid Response Content (lightweight configuration file)",
@@ -50,21 +52,31 @@
     "_recoverability_note": "Fully recoverable: the dual-pipeline architecture (sensor code vs Rapid Response Content) and its asymmetric governance was thoroughly documented in Congressional testimony and root cause analysis."
   },
   "decision_quality_indicators": {
+    "decision_risk_level": "critical",
     "confidence_score": null,
     "uncertainty_flags": [],
     "ground_truth_available": false,
     "_recoverability_note": "Structurally unfillable for the Rapid Response Content pathway: Content Validator was the sole quality gate and it contained a bug. No additional quality indicators existed for this pathway. The sensor code pathway had comprehensive quality indicators (staged rollout, regression tests, canary); the Rapid Response pathway had one checkpoint, and it failed."
   },
   "human_override_record": {
+    "override_occurred": false,
     "override_decision": null,
     "independence_assessment": null,
     "basis_for_deviation": null,
     "_recoverability_note": "Structurally absent by design: no human review step existed in the Rapid Response Content deployment pipeline. This was a deliberate architectural choice confirmed in Congressional testimony — the dual-pipeline design traded governance assurance for deployment velocity. The governance gap was architectural rather than operational."
   },
   "temporal_metadata": {
+    "event_timestamp": "2024-07-19T04:09:00.000Z",
+    "sequence_number": 1,
+    "hash_chain": {
+      "previous_hash": null,
+      "current_hash": "post-hoc-reconstruction",
+      "algorithm": "none"
+    },
+    "evidence_tier": "full",
     "decision_timestamp": "2024-07-19T04:09:00.000Z",
     "evidence_availability_timestamp": "2024-07-19T06:00:00.000Z",
     "ground_truth_arrival_timestamp": "2024-07-19T12:00:00.000Z",
-    "_recoverability_note": "Fully recoverable: deployment timestamps, crash reports from 8.5M machines, and root cause timeline were all well documented. Ground truth (root cause = Channel File 291 triggering out-of-bounds memory read) was identified same day once crash patterns were correlated with deployment timing."
+    "_recoverability_note": "Fully recoverable: deployment timestamps, crash reports from 8.5M machines, and root cause timeline were all well documented. Ground truth (root cause = Channel File 291 triggering out-of-bounds memory read) was identified same day once crash patterns were correlated with deployment timing. hash_chain and sequence_number are post-hoc placeholders."
   }
 }

@@ -1,8 +1,8 @@
 # Decision Event Schema
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923178.svg)](https://doi.org/10.5281/zenodo.18923178)
-[![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/tag/v0.1.0)
-![Version: v0.1.0](https://img.shields.io/badge/version-v0.1.0-blue)
+[![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/tag/v0.2.0)
+![Version: v0.2.0](https://img.shields.io/badge/version-v0.2.0-blue)
 ![JSON Schema: draft 2020-12](https://img.shields.io/badge/json%20schema-draft%202020--12-0f766e)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -42,19 +42,18 @@ with open("examples/cloudflare-2025.json") as f:
 validate(instance=event, schema=schema)
 ```
 
-## Schema Properties
+## Schema Properties (v0.2.0)
 
-| Property | Required | Resists Degradation Type |
-| -------- | -------- | ------------------------ |
-| `decision_id` | yes | -- |
-| `timestamp` | yes | -- |
-| `decision_type` | yes | -- |
-| `decision_context` | no | Content Staleness |
-| `decision_logic` | no | Schema Drift |
-| `decision_boundary` | no | Coverage Erosion |
-| `decision_quality_indicators` | no | Metric Erosion |
-| `human_override_record` | no | Override Accumulation |
-| `temporal_metadata` | no | Content Staleness (via Ground Truth Delay) |
+Four top-level property groups are **required**. Each group contains its own required sub-fields.
+
+| Property Group | Required | Key Sub-fields | Resists Degradation Type |
+| -------------- | -------- | -------------- | ------------------------ |
+| `decision_context` | **yes** | `decision_id`, `decision_type` | Content Staleness |
+| `decision_logic` | **yes** | `logic_type`, `output` | Schema Drift |
+| `human_override_record` | **yes** | `override_occurred` (+ conditional fields when true) | Override Accumulation |
+| `temporal_metadata` | **yes** | `event_timestamp`, `sequence_number`, `hash_chain`, `evidence_tier` | Content Staleness (via Ground Truth Delay) |
+| `decision_boundary` | no | `contributing_subsystems`, `upstream_decisions`, `downstream_consumers` | Coverage Erosion |
+| `decision_quality_indicators` | no | `confidence_score`, `ground_truth_available` | Metric Erosion |
 
 See [docs/properties.md](docs/properties.md) for detailed definitions and examples.
 
@@ -62,7 +61,7 @@ See [docs/properties.md](docs/properties.md) for detailed definitions and exampl
 
 ```text
 schema/
-  decision-event.schema.json   # v0.1 JSON Schema (draft 2020-12)
+  decision-event.schema.json   # v0.2 JSON Schema (draft 2020-12)
 examples/
   cloudflare-2025.json         # Cloudflare outage November 2025 (scale: abstraction boundaries)
   crowdstrike-2024.json        # CrowdStrike Falcon sensor outage (scale + velocity)
@@ -98,7 +97,7 @@ Diagnostic application of DES to the four paradigmatic cases (Paper 12, Table 19
 
 ## Version
 
-**v0.1.0** -- Minimal viable schema demonstrating the concept is formalizable. Full specification with domain-specific extensions will accompany the JOSS submission.
+**v0.2.0** -- Breaking change from v0.1.0. Four required property groups (`decision_context`, `decision_logic`, `human_override_record`, `temporal_metadata`) with required sub-fields. Adds `logic_type` with extensible namespace pattern, `override_occurred` mandatory boolean, `evidence_tier`, `hash_chain` integrity verification, and conditional validation for override details. All five case study examples updated.
 
 ## Contributing
 

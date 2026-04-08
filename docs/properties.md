@@ -1,14 +1,43 @@
 # Decision Event Schema: Property Reference
 
-Version 0.1.0
+Version 0.2.0
 
-## Required Properties
+## Required Property Groups
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `decision_id` | `string` (uuid) | Unique identifier for this decision event. |
-| `timestamp` | `string` (date-time) | ISO 8601 timestamp of when the decision was executed. |
-| `decision_type` | `enum` | Whether the decision was made by a `human`, `automated` system, or `hybrid` combination. |
+v0.2.0 requires four top-level property groups. Each group contains its own required sub-fields.
+
+### `decision_context` (required)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `decision_id` | `string` | yes | Unique identifier for this decision event. |
+| `decision_type` | `string` | yes | Free-text type of the decision (e.g., `transaction_execution`, `welfare_assessment`). |
+
+### `decision_logic` (required)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `logic_type` | `string` | yes | Core enum (`rule_based`, `ml_inference`, `hybrid`, `policy_evaluation`, `human_decision`) or namespaced extension (`namespace:type`). |
+| `output` | any | yes | The output of the decision logic. |
+
+### `human_override_record` (required)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `override_occurred` | `boolean` | yes | Whether a human override occurred. Mandatory for all logic types at all evidence tiers. |
+| `original_output` | any | if override | Original system output before override (required when `override_occurred=true`). |
+| `overridden_output` | any | if override | Output after human override (required when `override_occurred=true`). |
+| `override_timestamp` | `string` (date-time) | if override | When the override was applied (required when `override_occurred=true`). |
+
+### `temporal_metadata` (required)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `event_timestamp` | `string` (date-time) | yes | ISO 8601 timestamp of when the decision was executed. |
+| `sequence_number` | `integer` | yes | Monotonic ordering within a decision chain. |
+| `hash_chain` | `object` | yes | Integrity chain with `current_hash` (string), `algorithm` (string), `previous_hash` (string, nullable). |
+| `evidence_tier` | `enum` | yes | One of `lightweight`, `sampled`, `full`. |
+| `digital_signature` | `object` | no | Optional cryptographic non-repudiation (for AU-10 compliance or equivalent). |
 
 ## Governance Evidence Properties
 
@@ -36,5 +65,6 @@ From the governance artifact degradation taxonomy (Paper 12, Section 5). The tax
 ## Design Principles
 
 1. **Diagnostic, not prescriptive**: The schema defines what governance evidence should capture, not how systems must implement it.
-2. **Minimal viable structure**: v0.1 uses simple object types. Deeply nested or domain-specific subschemas are deferred to future versions.
-3. **Extensible**: All object properties allow `additionalProperties: true` to support domain-specific extensions.
+2. **Tiered evidence capture**: v0.2 introduces `evidence_tier` (lightweight/sampled/full) and `hash_chain` for integrity verification, enabling proportional governance evidence based on decision criticality.
+3. **Extensible**: All object properties allow `additionalProperties: true` to support domain-specific extensions. The `logic_type` field accepts namespaced extensions (`namespace:type`) beyond the five core values.
+4. **Conditional validation**: When `override_occurred=true`, the schema requires `original_output`, `overridden_output`, and `override_timestamp` via `allOf` conditional.

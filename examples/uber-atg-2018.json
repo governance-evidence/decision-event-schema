@@ -1,9 +1,9 @@
 {
-  "schema_version": "0.1.0",
-  "decision_id": "uber-atg-tempe-2018-03-18-perception",
-  "timestamp": "2018-03-19T04:58:00.000Z",
-  "decision_type": "automated",
+  "schema_version": "0.2.0",
   "decision_context": {
+    "decision_id": "uber-atg-tempe-2018-03-18-perception",
+    "decision_type": "autonomous_operation",
+    "trigger": "Pedestrian detected in vehicle path by LiDAR at approximately 5.6 seconds before impact",
     "available_inputs": [
       "LiDAR point cloud data (360-degree, 10 Hz)",
       "Radar returns from forward-facing radar",
@@ -24,6 +24,13 @@
     "_recoverability_note": "Recoverable: operational design context was well-documented in Uber ATG engineering records and NTSB investigation. The system's design constraints (disabled emergency braking, no operator alert) were architectural choices recorded in system documentation."
   },
   "decision_logic": {
+    "logic_type": "ml_inference",
+    "output": "Continue current trajectory at 38 mph; no emergency action initiated",
+    "model_inference": {
+      "model_id": "Uber ATG perception and classification stack",
+      "model_version": "Version at time of March 2018 incident",
+      "confidence": null
+    },
     "rule_version": "Uber ATG self-driving system perception and motion planning stack (version at time of incident)",
     "parameters": {
       "perception_model": "Deep learning object detection and classification",
@@ -55,21 +62,31 @@
     "_recoverability_note": "Partially recoverable: individual subsystems were documented, but the perception-to-planning handoff -- the critical boundary where classification instability translated into action suppression -- was not monitored as a governance boundary. NTSB found that no mechanism existed to assess whether the cross-subsystem interaction was adequate to the safety risks."
   },
   "decision_quality_indicators": {
+    "decision_risk_level": "critical",
     "confidence_score": null,
     "uncertainty_flags": [],
     "ground_truth_available": false,
     "_recoverability_note": "Structurally unfillable: no confidence threshold existed for triggering protective action. The system produced classification outputs without uncertainty quantification that would have flagged 19 reclassifications in 5.6 seconds as anomalous. Ground truth (pedestrian presence on road) was available in sensor data but not surfaced as a quality indicator to the decision system."
   },
   "human_override_record": {
+    "override_occurred": false,
     "override_decision": "No override executed; safety driver was not monitoring the road",
     "independence_assessment": "Safety driver operated under organizational expectations to monitor autonomous system performance; NTSB found the driver was visually distracted",
     "basis_for_deviation": null,
     "_recoverability_note": "Captured but diagnostically complex: the override record shows the safety driver did not intervene, and NTSB documented the distraction. However, even an attentive driver faced an architectural constraint: the system provided no alert that intervention was needed, and the time between final classification and impact (1.3 seconds) was at the boundary of human reaction capability."
   },
   "temporal_metadata": {
+    "event_timestamp": "2018-03-19T04:58:00.000Z",
+    "sequence_number": 1,
+    "hash_chain": {
+      "previous_hash": null,
+      "current_hash": "post-hoc-reconstruction",
+      "algorithm": "none"
+    },
+    "evidence_tier": "full",
     "decision_timestamp": "2018-03-19T04:58:00.000Z",
     "evidence_availability_timestamp": "2018-03-19T05:00:00.000Z",
     "ground_truth_arrival_timestamp": "2019-11-19T00:00:00.000Z",
-    "_recoverability_note": "Recoverable: NTSB-mandated event data recording captured sensor inputs, perception outputs, and vehicle state at high temporal resolution. System logs were available immediately after the incident. Formal ground truth (NTSB probable cause determination, HAR-19/03) was published November 19, 2019."
+    "_recoverability_note": "Recoverable: NTSB-mandated event data recording captured sensor inputs, perception outputs, and vehicle state at high temporal resolution. System logs were available immediately after the incident. Formal ground truth (NTSB probable cause determination, HAR-19/03) was published November 19, 2019. hash_chain and sequence_number are post-hoc placeholders."
   }
 }

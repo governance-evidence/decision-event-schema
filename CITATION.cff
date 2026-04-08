@@ -5,8 +5,8 @@ type: software
 authors:
   - given-names: Oleg
     family-names: Solozobov
-version: 0.1.0
-date-released: "2026-02-24"
+version: 0.2.0
+date-released: "2026-07-15"
 license: MIT
 doi: "10.5281/zenodo.18923178"
 repository-code: "https://github.com/governance-evidence/decision-event-schema"
