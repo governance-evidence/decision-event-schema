@@ -1,6 +1,7 @@
 # Decision Event Schema
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923178.svg)](https://doi.org/10.5281/zenodo.18923178)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18923177.svg)](https://doi.org/10.5281/zenodo.18923177)
+[![arXiv](https://img.shields.io/badge/arXiv-2604.09296-b31b1b.svg)](https://arxiv.org/abs/2604.09296)
 [![GitHub release](https://img.shields.io/github/v/release/governance-evidence/decision-event-schema)](https://github.com/governance-evidence/decision-event-schema/releases/latest)
 ![Version: v0.3.0](https://img.shields.io/badge/version-v0.3.0-blue)
 ![JSON Schema: draft 2020-12](https://img.shields.io/badge/json%20schema-draft%202020--12-0f766e)
@@ -10,9 +11,17 @@ JSON Schema specification for decision events as governance evidence units.
 
 ## Academic Context
 
-This schema operationalizes the governance-compliance evidence distinction proposed in:
+This schema is the primary artifact of:
 
-> Solozobov, O. (2026). Distinguishing Governance Evidence from Compliance Evidence in Automated Decision Systems: A Diagnostic Framework for Post-Incident Reconstruction (forthcoming).
+> Solozobov, O. (2026). *Decision Trace Schema for Governance Evidence in Real-Time Risk Systems*. arXiv:2604.09296. <https://arxiv.org/abs/2604.09296>
+
+It also operationalizes the governance-compliance evidence distinction proposed in:
+
+> Solozobov, O. (2026). *Distinguishing Governance Evidence from Compliance Evidence in Automated Decision Systems: A Diagnostic Framework for Post-Incident Reconstruction*. SSRN preprint. <https://doi.org/10.2139/ssrn.6457861>
+
+Synthesis context — this schema is one of the four artifacts whose transferability is assessed in:
+
+> Solozobov, O. (2026). *Governed Auditable Decisioning Under Uncertainty: Synthesis and Agentic Extension*. arXiv:2604.19112. <https://arxiv.org/abs/2604.19112>
 
 Traditional accountability mechanisms produce **compliance evidence** -- documentation that a process exists and was followed. Post-incident reconstruction requires **governance evidence** -- records that enable independent third-party reconstruction of *why* decisions were made and whether the decision-making process was adequate.
 
@@ -155,20 +164,52 @@ python tests/validate.py
 
 ## Citation
 
-If you use this schema in your research, please cite:
+If you use this schema in your research, please cite both the paper and the software artifact.
+
+**Paper (primary):**
 
 ```bibtex
-@software{solozobov2026decision,
+@misc{solozobov2026decisiontrace,
   author = {Solozobov, Oleg},
-  title = {Decision Event Schema},
-  version = {0.3.0},
-  year = {2026},
-  url = {https://github.com/governance-evidence/decision-event-schema},
-  doi = {10.5281/zenodo.18923178}
+  title  = {Decision Trace Schema for Governance Evidence in Real-Time Risk Systems},
+  year   = {2026},
+  eprint = {2604.09296},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CY},
+  doi    = {10.48550/arXiv.2604.09296},
+  url    = {https://arxiv.org/abs/2604.09296}
 }
 ```
 
+**Software (this repository):**
+
+```bibtex
+@software{solozobov2026decisioneventschema,
+  author  = {Solozobov, Oleg},
+  title   = {Decision Event Schema},
+  version = {0.3.0},
+  year    = {2026},
+  url     = {https://github.com/governance-evidence/decision-event-schema},
+  doi     = {10.5281/zenodo.18923177}
+}
+```
+
+The software `doi` above is the **concept DOI** (always resolves to the latest Zenodo release). The current v0.3.0 version DOI is [10.5281/zenodo.19471740](https://doi.org/10.5281/zenodo.19471740).
+
 See [CITATION.cff](CITATION.cff) for machine-readable citation metadata.
+
+## Related Projects
+
+This schema is part of the [governance-evidence](https://github.com/governance-evidence) toolkit:
+
+| Repository | Role | Concept DOI |
+| ---------- | ---- | ----------- |
+| [evidence-collector-sdk](https://github.com/governance-evidence/evidence-collector-sdk) | Produces events conforming to this schema from raw telemetry | [10.5281/zenodo.19245404](https://doi.org/10.5281/zenodo.19245404) |
+| [evidence-sufficiency-calc](https://github.com/governance-evidence/evidence-sufficiency-calc) | Scores sufficiency of event streams validated against this schema | [10.5281/zenodo.19233930](https://doi.org/10.5281/zenodo.19233930) |
+| [governance-drift-toolkit](https://github.com/governance-evidence/governance-drift-toolkit) | Monitors degradation of event streams conforming to this schema | [10.5281/zenodo.19236417](https://doi.org/10.5281/zenodo.19236417) |
+| [governance-benchmark-dataset](https://github.com/governance-evidence/governance-benchmark-dataset) | Benchmark scoring each schema property across four decision architectures | [10.5281/zenodo.19248722](https://doi.org/10.5281/zenodo.19248722) |
+
+All DOIs above are **concept DOIs** -- each resolves to the latest Zenodo release of that artifact.
 
 ## License
 

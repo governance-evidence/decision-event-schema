@@ -5,11 +5,26 @@ type: software
 authors:
   - given-names: Oleg
     family-names: Solozobov
+    orcid: "https://orcid.org/0009-0009-0105-7459"
 version: 0.3.0
 date-released: "2026-04-08"
 license: MIT
-doi: "10.5281/zenodo.18923178"
+doi: "10.5281/zenodo.19471740"  # v0.3.0 version DOI
 repository-code: "https://github.com/governance-evidence/decision-event-schema"
+url: "https://github.com/governance-evidence/decision-event-schema"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.18923177"
+    description: "Concept DOI (always resolves to latest Zenodo release)"
+  - type: other
+    value: "arXiv:2604.09296"
+    description: "Primary preprint: Decision Trace Schema for Governance Evidence in Real-Time Risk Systems"
+  - type: doi
+    value: "10.2139/ssrn.6457861"
+    description: "Framework preprint (SSRN): Distinguishing Governance Evidence from Compliance Evidence"
+  - type: other
+    value: "arXiv:2604.19112"
+    description: "Synthesis preprint: Governed Auditable Decisioning Under Uncertainty"
 abstract: >-
   JSON Schema specification for decision events as governance evidence units.
   Defines the minimal unit of governance evidence that enables post-incident
